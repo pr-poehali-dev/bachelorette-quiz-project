@@ -92,7 +92,6 @@ function useConfetti() {
 function PlayMode({ questions, onEdit }: { questions: Question[]; onEdit: () => void }) {
   const [current, setCurrent] = useState(0);
   const [openAnswer, setOpenAnswer] = useState<string | null>(null);
-  const [chosen, setChosen] = useState<string | null>(null);
   const [phase, setPhase] = useState<"playing" | "done">("playing");
   const [cardKey, setCardKey] = useState(0);
   const { pieces, spawn } = useConfetti();
@@ -100,16 +99,13 @@ function PlayMode({ questions, onEdit }: { questions: Question[]; onEdit: () => 
   const q = questions[current];
   const progress = (current / questions.length) * 100;
 
-  const handleChoose = (aId: string) => {
-    if (chosen) return;
-    setChosen(aId);
-    setOpenAnswer(aId);
+  const handleToggle = (aId: string) => {
+    setOpenAnswer((prev) => (prev === aId ? null : aId));
   };
 
   const handleNext = () => {
     if (current < questions.length - 1) {
       setCurrent((c) => c + 1);
-      setChosen(null);
       setOpenAnswer(null);
       setCardKey((k) => k + 1);
     } else {
@@ -120,7 +116,6 @@ function PlayMode({ questions, onEdit }: { questions: Question[]; onEdit: () => 
 
   const handleRestart = () => {
     setCurrent(0);
-    setChosen(null);
     setOpenAnswer(null);
     setPhase("playing");
     setCardKey(0);
@@ -222,30 +217,28 @@ function PlayMode({ questions, onEdit }: { questions: Question[]; onEdit: () => 
                 <div className="flex flex-col gap-2 mb-5">
                   {q.answers.filter(a => a.text.trim()).map((ans, idx) => {
                     const isOpen = openAnswer === ans.id;
-                    const isChosen = chosen === ans.id;
                     const labels = ["А","Б","В","Г","Д"];
 
                     return (
                       <div key={ans.id}
                         className="rounded-2xl overflow-hidden transition-all"
                         style={{
-                          border: isChosen ? "2.5px solid #A855F7" : "2.5px solid #e9d5ff",
-                          background: isChosen ? "linear-gradient(135deg,#f3e8ff,#fce7f3)" : "white",
-                          boxShadow: isChosen ? "0 6px 20px rgba(168,85,247,0.2)" : "none",
+                          border: isOpen ? "2.5px solid #A855F7" : "2.5px solid #e9d5ff",
+                          background: "white",
+                          boxShadow: isOpen ? "0 6px 20px rgba(168,85,247,0.2)" : "none",
                         }}>
-                        {/* Нажатие выбирает ответ и раскрывает его */}
+                        {/* Нажатие раскрывает/закрывает ответ */}
                         <button
                           className="w-full flex items-center gap-3 px-4 py-3.5 text-left transition-all"
                           style={{ fontFamily:"Nunito,sans-serif" }}
-                          disabled={!!chosen}
-                          onClick={() => handleChoose(ans.id)}
+                          onClick={() => handleToggle(ans.id)}
                         >
                           <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs flex-shrink-0 font-extrabold"
                             style={{
-                              background: isChosen ? "#A855F7" : "#f3e8ff",
-                              color: isChosen ? "white" : "#7c3aed",
+                              background: isOpen ? "#A855F7" : "#f3e8ff",
+                              color: isOpen ? "white" : "#7c3aed",
                             }}>
-                            {isChosen ? "✓" : labels[idx]}
+                            {labels[idx]}
                           </span>
                           <span className="flex-1 font-bold text-purple-400 tracking-widest">
                             {isOpen ? "" : "..."}
@@ -277,12 +270,10 @@ function PlayMode({ questions, onEdit }: { questions: Question[]; onEdit: () => 
                   })}
                 </div>
 
-                {/* Next button — appears after choosing */}
-                {chosen && (
-                  <button className="cta-btn w-full animate-pop-in" onClick={handleNext}>
-                    {current < questions.length - 1 ? "Следующий вопрос →" : "Завершить викторину 🎉"}
-                  </button>
-                )}
+                {/* Постоянная кнопка «Далее» */}
+                <button className="cta-btn w-full" onClick={handleNext}>
+                  {current < questions.length - 1 ? "Следующий вопрос →" : "Завершить викторину 🎉"}
+                </button>
               </div>
             </div>
           )}
