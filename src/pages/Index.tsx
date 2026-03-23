@@ -233,22 +233,19 @@ function PlayMode({ questions, onEdit }: { questions: Question[]; onEdit: () => 
                           background: isChosen ? "linear-gradient(135deg,#f3e8ff,#fce7f3)" : "white",
                           boxShadow: isChosen ? "0 6px 20px rgba(168,85,247,0.2)" : "none",
                         }}>
-                        {/* Header — always visible, click to toggle */}
+                        {/* Нажатие выбирает ответ и раскрывает его */}
                         <button
                           className="w-full flex items-center gap-3 px-4 py-3.5 text-left transition-all"
                           style={{ fontFamily:"Nunito,sans-serif" }}
-                          onClick={() => {
-                            if (!chosen) {
-                              setOpenAnswer(isOpen ? null : ans.id);
-                            }
-                          }}
+                          disabled={!!chosen}
+                          onClick={() => handleChoose(ans.id)}
                         >
                           <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs flex-shrink-0 font-extrabold"
                             style={{
                               background: isChosen ? "#A855F7" : "#f3e8ff",
                               color: isChosen ? "white" : "#7c3aed",
                             }}>
-                            {labels[idx]}
+                            {isChosen ? "✓" : labels[idx]}
                           </span>
                           <span className="flex-1 font-bold text-purple-900">{ans.text}</span>
                           <span className="text-purple-400 transition-transform duration-300"
@@ -257,31 +254,19 @@ function PlayMode({ questions, onEdit }: { questions: Question[]; onEdit: () => 
                           </span>
                         </button>
 
-                        {/* Expandable content */}
+                        {/* Раскрывающийся блок после выбора */}
                         <div style={{
-                          maxHeight: isOpen ? "200px" : "0",
+                          maxHeight: isOpen ? "120px" : "0",
                           overflow: "hidden",
-                          transition: "max-height 0.35s cubic-bezier(0.4,0,0.2,1)",
+                          transition: "max-height 0.4s cubic-bezier(0.4,0,0.2,1)",
                         }}>
                           <div className="px-4 pb-4 pt-1">
-                            <div className="rounded-xl p-3 text-center"
+                            <div className="rounded-xl p-3 flex items-center gap-3"
                               style={{ background: "linear-gradient(135deg,#fdf4ff,#fce7f3)" }}>
-                              <div className="text-2xl mb-1">
-                                {["💕","🌟","✨","🦋","🌸"][idx]}
-                              </div>
-                              {!chosen ? (
-                                <button
-                                  className="cta-btn text-sm px-6 py-2 mt-1"
-                                  style={{ fontSize:"14px", padding:"8px 24px" }}
-                                  onClick={() => handleChoose(ans.id)}
-                                >
-                                  Выбрать этот ответ!
-                                </button>
-                              ) : (
-                                <p className="text-purple-500 font-bold text-sm">
-                                  {isChosen ? "✅ Ты выбрала этот ответ!" : ""}
-                                </p>
-                              )}
+                              <span className="text-2xl">{["💕","🌟","✨","🦋","🌸"][idx]}</span>
+                              <p className="text-purple-600 font-bold text-sm">
+                                Ты выбрала этот ответ!
+                              </p>
                             </div>
                           </div>
                         </div>
