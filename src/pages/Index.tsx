@@ -247,14 +247,16 @@ function PlayMode({ questions, onEdit }: { questions: Question[]; onEdit: () => 
                             }}>
                             {isChosen ? "✓" : labels[idx]}
                           </span>
-                          <span className="flex-1 font-bold text-purple-900">{ans.text}</span>
+                          <span className="flex-1 font-bold text-purple-400 tracking-widest">
+                            {isOpen ? "" : "..."}
+                          </span>
                           <span className="text-purple-400 transition-transform duration-300"
                             style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", display:"flex" }}>
                             <Icon name="ChevronDown" size={18} />
                           </span>
                         </button>
 
-                        {/* Раскрывающийся блок после выбора */}
+                        {/* Раскрывающийся блок с текстом ответа */}
                         <div style={{
                           maxHeight: isOpen ? "120px" : "0",
                           overflow: "hidden",
@@ -264,8 +266,8 @@ function PlayMode({ questions, onEdit }: { questions: Question[]; onEdit: () => 
                             <div className="rounded-xl p-3 flex items-center gap-3"
                               style={{ background: "linear-gradient(135deg,#fdf4ff,#fce7f3)" }}>
                               <span className="text-2xl">{["💕","🌟","✨","🦋","🌸"][idx]}</span>
-                              <p className="text-purple-600 font-bold text-sm">
-                                Ты выбрала этот ответ!
+                              <p className="text-purple-800 font-bold text-base">
+                                {ans.text}
                               </p>
                             </div>
                           </div>
